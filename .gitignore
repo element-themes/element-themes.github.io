@@ -1,0 +1,7 @@
+node_modules/
+dist/
+public/themes/
+.themes-repository/
+.DS_Store
+*.local
+*.tsbuildinfo
