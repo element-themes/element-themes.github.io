@@ -32,7 +32,7 @@ async function main() {
   let source: string;
   if (process.env.THEMES_SOURCE_DIR) {
     source = resolve(process.env.THEMES_SOURCE_DIR, "themes");
-  } else if (await exists(join(localRepository, "themes", "index.json"))) {
+  } else if (!process.env.CI && await exists(join(localRepository, "themes", "index.json"))) {
     source = join(localRepository, "themes");
   } else {
     checkout = await mkdtemp(join(tmpdir(), "element-themes-"));
