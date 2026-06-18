@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowUpRight, Check, Clipboard, Code2, ExternalLink, GitFork, Image, Moon, Search, Sun, X } from "lucide-react";
 import type { Manifest, Theme } from "./types";
-import popularity from "./data/popularity.json";
 
 const assetBaseUrl = new URL(import.meta.env.BASE_URL, window.location.href);
 
@@ -54,7 +53,6 @@ function App() {
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("All");
-  const [sort, setSort] = useState<"name" | "popular">("name");
   const [toast, setToast] = useState("");
   const [contribute, setContribute] = useState(location.hash === "#contribute");
   const [selectedTheme, setSelectedTheme] = useState<Theme | null>(null);
@@ -105,16 +103,10 @@ function App() {
   }, []);
 
   const tags = useMemo(() => ["All", ...Array.from(new Set(manifest?.themes.flatMap((theme) => theme.tags) || []))], [manifest]);
-  const popularityCounts = popularity.counts as Record<string, number>;
-  const themes = useMemo(() => {
-    const filtered = manifest?.themes.filter((theme) => {
-      const matchesQuery = `${theme.name} ${theme.tags.join(" ")}`.toLowerCase().includes(query.toLowerCase());
-      return matchesQuery && (filter === "All" || theme.tags.includes(filter));
-    }) || [];
-    return [...filtered].sort((a, b) => sort === "popular"
-      ? (popularityCounts[b.id] || 0) - (popularityCounts[a.id] || 0) || a.name.localeCompare(b.name)
-      : a.name.localeCompare(b.name));
-  }, [manifest, query, filter, sort]);
+  const themes = useMemo(() => manifest?.themes.filter((theme) => {
+    const matchesQuery = `${theme.name} ${theme.tags.join(" ")}`.toLowerCase().includes(query.toLowerCase());
+    return matchesQuery && (filter === "All" || theme.tags.includes(filter));
+  }) || [], [manifest, query, filter]);
 
   const copy = async (text: string, message: string) => {
     await navigator.clipboard.writeText(text);
@@ -123,10 +115,6 @@ function App() {
   };
   const localThemeUrl = (theme: Theme) => new URL(`themes/${theme.file}`, assetBaseUrl).href;
   const publishedThemeUrl = (theme: Theme) => new URL(`themes/${theme.file}`, publishedBaseUrl()).href;
-  const copyThemeUrl = async (theme: Theme) => {
-    window.umami?.track("copy-theme-url", { theme: theme.id });
-    await copy(publishedThemeUrl(theme), `${theme.name} URL copied`);
-  };
   const previewUrl = (theme: Theme) => theme.preview ? new URL(`themes/${theme.preview}`, assetBaseUrl).href : null;
   const openTheme = (theme: Theme) => {
     previousFocus.current = document.activeElement as HTMLElement;
@@ -152,7 +140,6 @@ function App() {
         <div className="controls">
           <label className="search"><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search themes" />{query && <button onClick={() => setQuery("")} aria-label="Clear search"><X size={15} /></button>}</label>
           <div className="filters">{tags.map((tag) => <button className={tag === filter ? "active" : ""} onClick={() => setFilter(tag)} key={tag}>{tag}</button>)}</div>
-          <label className="sort-control"><span>Sort</span><select value={sort} onChange={(event) => setSort(event.target.value as "name" | "popular")}><option value="name">Name</option><option value="popular">Popular</option></select></label>
         </div>
         <div className="grid">
           {themes.map((theme) => <article className="card" key={theme.id}>
@@ -160,12 +147,12 @@ function App() {
             <ThemeMedia theme={theme} />
             <div className="card-body">
               <div className="card-title">
-                <div><h3>{theme.name}</h3><span className="mode">{theme.isDark ? <Moon size={13} /> : <Sun size={13} />}{theme.isDark ? "Dark" : "Light"}{popularityCounts[theme.id] > 0 && <> · {popularityCounts[theme.id]} copies</>}</span></div>
+                <div><h3>{theme.name}</h3><span className="mode">{theme.isDark ? <Moon size={13} /> : <Sun size={13} />}{theme.isDark ? "Dark" : "Light"}</span></div>
                 <div className="swatches" aria-label="Theme colors">{["accent-color", "primary-color", "sidebar-color", "timeline-background-color"].map((key) => theme.colors[key] && <i key={key} style={{ background: theme.colors[key] }} />)}</div>
               </div>
               <div className="tags">{theme.tags.slice(1).map((tag) => <span key={tag}>{tag}</span>)}</div>
               <div className="card-actions" onClick={(event) => event.stopPropagation()}>
-                <button className="copy" onClick={() => copyThemeUrl(theme)}><Clipboard size={15} /> Copy theme URL</button>
+                <button className="copy" onClick={() => copy(publishedThemeUrl(theme), `${theme.name} URL copied`)}><Clipboard size={15} /> Copy theme URL</button>
                 <a href={localThemeUrl(theme)} target="_blank" rel="noreferrer"><Code2 size={15} /> View JSON</a>
                 <button onClick={() => openTheme(theme)}><Image size={15} /> Preview</button>
               </div>
@@ -192,13 +179,13 @@ function App() {
         </div>
         <div className="modal-content">
           <div className="modal-heading">
-            <div><h2 id="theme-modal-title">{selectedTheme.name}</h2><span className="mode">{selectedTheme.isDark ? <Moon size={14} /> : <Sun size={14} />}{selectedTheme.isDark ? "Dark" : "Light"}{popularityCounts[selectedTheme.id] > 0 && <> · {popularityCounts[selectedTheme.id]} copies</>}</span></div>
+            <div><h2 id="theme-modal-title">{selectedTheme.name}</h2><span className="mode">{selectedTheme.isDark ? <Moon size={14} /> : <Sun size={14} />}{selectedTheme.isDark ? "Dark" : "Light"}</span></div>
             <div className="modal-swatches" aria-label="Theme colors">{Object.entries(selectedTheme.colors).filter(([key]) => ["accent-color", "primary-color", "sidebar-color", "roomlist-background-color", "timeline-background-color"].includes(key)).map(([key, color]) => <span key={key}><i style={{ background: color }} /><small>{key.replace(/-color$/, "")}</small></span>)}</div>
           </div>
           <div className="modal-tags">{selectedTheme.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-          <label className="json-url"><span>JSON URL</span><div><code>{publishedThemeUrl(selectedTheme)}</code><button onClick={() => copyThemeUrl(selectedTheme)} aria-label="Copy JSON URL"><Clipboard size={15} /></button></div></label>
+          <label className="json-url"><span>JSON URL</span><div><code>{publishedThemeUrl(selectedTheme)}</code><button onClick={() => copy(publishedThemeUrl(selectedTheme), `${selectedTheme.name} URL copied`)} aria-label="Copy JSON URL"><Clipboard size={15} /></button></div></label>
           <div className="modal-actions">
-            <button className="button primary" onClick={() => copyThemeUrl(selectedTheme)}><Clipboard size={16} /> Copy theme URL</button>
+            <button className="button primary" onClick={() => copy(publishedThemeUrl(selectedTheme), `${selectedTheme.name} URL copied`)}><Clipboard size={16} /> Copy theme URL</button>
             <button className="button secondary" onClick={async () => copy(await fetch(localThemeUrl(selectedTheme)).then((response) => response.text()), `${selectedTheme.name} JSON copied`)}><Code2 size={16} /> Copy raw JSON</button>
             <a className="button secondary" href={localThemeUrl(selectedTheme)} target="_blank" rel="noreferrer">View JSON <ExternalLink size={15} /></a>
             {previewUrl(selectedTheme) && <a className="button text-button" href={previewUrl(selectedTheme)!} target="_blank" rel="noreferrer">Open preview image <ExternalLink size={15} /></a>}

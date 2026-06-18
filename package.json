@@ -8,8 +8,7 @@
     "build": "pnpm sync-themes && tsc -b && vite build",
     "build:site": "tsc -b && vite build",
     "preview": "vite preview",
-    "sync-themes": "node --import tsx scripts/sync-themes.ts",
-    "popularity:update": "node --import tsx scripts/update-popularity.ts"
+    "sync-themes": "node --import tsx scripts/sync-themes.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
