@@ -15,6 +15,7 @@ function repositoryUrl() {
 }
 
 const repoUrl = repositoryUrl();
+const organizationUrl = "https://github.com/element-themes";
 const themesRepoUrl = "https://github.com/element-themes/themes";
 
 function publishedBaseUrl() {
@@ -125,7 +126,7 @@ function App() {
   return <>
     <header className="nav shell">
       <a className="brand" href={import.meta.env.BASE_URL}><span className="brand-mark">E</span><span>Element Themes</span></a>
-      <nav><a href="#gallery">Themes</a><a href="#about">About</a><a className="nav-github" href={repoUrl} target="_blank" rel="noreferrer"><GitFork size={16} /> GitHub</a></nav>
+      <nav><a href="#gallery">Themes</a><a href="#about">About</a><a className="nav-github" href={organizationUrl} target="_blank" rel="noreferrer"><GitFork size={16} /> GitHub</a></nav>
     </header>
 
     <main>
@@ -169,7 +170,7 @@ function App() {
       </section>
     </main>
 
-    <footer className="shell"><span>Element Themes</span><p>Community project. Not affiliated with Element or The Matrix.org Foundation.</p><a href={repoUrl} target="_blank" rel="noreferrer"><GitFork size={16} /> Source</a></footer>
+    <footer className="shell"><span>Element Themes</span><p>Community project. Not affiliated with Element or The Matrix.org Foundation.</p><a href={themesRepoUrl} target="_blank" rel="noreferrer"><GitFork size={16} /> Themes</a></footer>
     {selectedTheme && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedTheme(null); }}>
       <div className="theme-modal" ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
         <button className="modal-close" onClick={() => setSelectedTheme(null)} aria-label="Close theme details"><X size={19} /></button>
@@ -204,7 +205,7 @@ function ContributionPage({ onBack }: { onBack: () => void }) {
     ["Open a pull request", "Submit the theme for review."],
   ];
   return <div className="contribute-page">
-    <header className="nav shell"><button className="back" onClick={onBack}><ArrowLeft size={17} /> Gallery</button><a className="brand" href={import.meta.env.BASE_URL}><span className="brand-mark">E</span><span>Element Themes</span></a><a className="nav-github" href={repoUrl} target="_blank" rel="noreferrer"><GitFork size={16} /> GitHub</a></header>
+    <header className="nav shell"><button className="back" onClick={onBack}><ArrowLeft size={17} /> Gallery</button><a className="brand" href={import.meta.env.BASE_URL}><span className="brand-mark">E</span><span>Element Themes</span></a><a className="nav-github" href={organizationUrl} target="_blank" rel="noreferrer"><GitFork size={16} /> GitHub</a></header>
     <main className="contribute shell">
       <h1>Add a theme</h1><p className="lead">Add the theme JSON, include at least one screenshot, and open a pull request.</p>
       <div className="steps">{steps.map(([title, body], index) => <article key={title}><span>{index + 1}</span><div><h2>{title}</h2><p>{body}</p>{index === 1 && <code>themes/my-theme.json</code>}</div></article>)}</div>
