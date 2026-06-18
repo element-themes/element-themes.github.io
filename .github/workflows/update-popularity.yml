@@ -25,8 +25,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm popularity:update
         env:
-          UMAMI_API_URL: ${{ vars.UMAMI_API_URL }}
-          UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
+          UMAMI_API_URL: https://api.umami.is/v1
+          UMAMI_WEBSITE_ID: 66bb80e0-7f16-4a6c-b122-f30c5ebb1e05
           UMAMI_API_KEY: ${{ secrets.UMAMI_API_KEY }}
           UMAMI_BEARER_TOKEN: ${{ secrets.UMAMI_BEARER_TOKEN }}
       - name: Commit updated counts

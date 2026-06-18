@@ -30,8 +30,8 @@ jobs:
           BASE_PATH: /
           VITE_REPOSITORY_URL: https://github.com/element-themes/element-themes.github.io
           VITE_SITE_URL: https://element-themes.github.io/
-          VITE_UMAMI_SCRIPT_URL: ${{ vars.UMAMI_SCRIPT_URL }}
-          VITE_UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
+          VITE_UMAMI_SCRIPT_URL: https://cloud.umami.is/script.js
+          VITE_UMAMI_WEBSITE_ID: 66bb80e0-7f16-4a6c-b122-f30c5ebb1e05
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

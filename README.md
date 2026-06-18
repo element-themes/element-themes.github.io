@@ -48,18 +48,11 @@ The GitHub Actions workflow uses Node.js 24, installs dependencies, syncs the th
 
 The gallery can record `copy-theme-url` events with Umami and sort themes using aggregated counts in `src/data/popularity.json`. Analytics is optional. The gallery works normally when it is not configured.
 
-Configure these GitHub Actions repository variables:
-
-- `UMAMI_SCRIPT_URL`: tracker URL, such as `https://cloud.umami.is/script.js` or a self-hosted tracker URL
-- `UMAMI_WEBSITE_ID`: the Umami website ID
-- `UMAMI_API_URL`: optional API base; defaults to `https://api.umami.is/v1` for Umami Cloud
-
-Configure one repository secret:
+The Pages workflow is configured with the gallery's Umami Cloud tracker and website ID. Configure this repository secret to enable daily popularity aggregation:
 
 - `UMAMI_API_KEY`: Umami Cloud API key
-- `UMAMI_BEARER_TOKEN`: alternative for a self-hosted Umami instance
 
-Only one API credential is required. The daily `update-popularity.yml` workflow reads aggregated event values from Umami, updates the tracked JSON file, and commits changed counts. Its commit triggers the normal Pages deployment.
+The daily `update-popularity.yml` workflow reads aggregated event values from Umami, updates the tracked JSON file, and commits changed counts. Its commit triggers the normal Pages deployment.
 
 For local analytics testing, set `VITE_UMAMI_SCRIPT_URL` and `VITE_UMAMI_WEBSITE_ID` before running `pnpm dev`.
 
