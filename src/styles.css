@@ -54,6 +54,9 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .filters button { padding: 10px 13px; border: 1px solid var(--border); border-radius: 5px; white-space: nowrap; background: transparent; color: #929aa4; font-size: 13px; cursor: pointer; }
 .filters button:hover { border-color: #424b56; color: #d6d9dd; }
 .filters button.active { border-color: #4c575f; background: #e5e8ea; color: #111519; }
+.sort-control { margin-left: auto; height: 43px; padding: 0 8px 0 12px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 6px; background: #101419; color: #858e98; font-size: 13px; }
+.sort-control select { border: 0; outline: 0; background: #101419; color: #e0e3e6; font-size: 13px; cursor: pointer; }
+.sort-control:focus-within { border-color: #4e5965; }
 
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 .card { position: relative; min-width: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); transition: border-color .15s; }
@@ -156,6 +159,7 @@ footer > a { display: inline-flex; align-items: center; gap: 6px; }
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .controls { align-items: stretch; flex-direction: column; }
   .search { flex-basis: auto; }
+  .sort-control { width: max-content; margin-left: 0; }
   .about { grid-template-columns: 1fr auto; }
   .about > div { grid-column: 1 / -1; margin-bottom: 7px; }
 }

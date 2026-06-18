@@ -1,0 +1,42 @@
+name: Update theme popularity
+
+on:
+  schedule:
+    - cron: "23 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: theme-popularity
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm popularity:update
+        env:
+          UMAMI_API_URL: ${{ vars.UMAMI_API_URL }}
+          UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
+          UMAMI_API_KEY: ${{ secrets.UMAMI_API_KEY }}
+          UMAMI_BEARER_TOKEN: ${{ secrets.UMAMI_BEARER_TOKEN }}
+      - name: Commit updated counts
+        run: |
+          if git diff --quiet -- src/data/popularity.json; then
+            echo "No popularity changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/popularity.json
+          git commit -m "Update theme popularity"
+          git push
